@@ -1,59 +1,36 @@
-name: Push to another repository
+name: Mirror Repository
 
 on:
   push:
-    branches: ["main"]
-
-permissions:
-  contents: write
+    branches: [ main ]
 
 jobs:
-  push:
+  mirror:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+    - name: Mirror Repository
+      env:
+        PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+      run: |
+        # Configure git
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
 
-      - name: Install Git Filter-Repo
-        run: |
-          pip install git-filter-repo
+        # Clone the public repository
+        git clone https://github.com/vgodsoe/public_repo.git
 
-      # - name: Filter sensitive file
-      #   run: |
-      #     git filter-repo --path test_private.json --invert-paths
+        # Navigate into the public repository
+        cd public_repo
 
-      - name: Force push to target repository
-        env:
-          PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
-        run: |
-          # Configure git
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+        # Set the private repository as a remote named 'private'
+        git remote add private https://github.com/vgodsoe/private_repo.git
 
-          # Add target as a remote repository
-          git remote add target https://github.com/vgodsoe/public_repo.git
+        # Fetch the private repository
+        git fetch private
 
-          # Create a new branch and commit changes
-          git checkout -b my-changes
-          # Add your changes
-          echo "My changes" > my-changes.txt
-          git add .
-          git commit -m "My changes"
+        # Reset the main branch to mirror the private repository
+        git reset --hard private/main
 
-          # Push the branch to the remote repository
-          git push -u target my-changes
-
-          # Create a pull request using the GitHub API
-          curl \
-            -X POST \
-            -H "Authorization: token $PUBLIC_REPO_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/vgodsoe/public_repo/pulls \
-            -d '{
-              "title": "My changes",
-              "head": "my-changes",
-              "base": "main"
-            }'
+        # Push the changes to the public repository
+        git push origin main --force
