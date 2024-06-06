@@ -21,9 +21,9 @@ jobs:
         run: |
           pip install git-filter-repo
 
-      - name: Filter sensitive file
-        run: |
-          git filter-repo --path test_private.json --invert-paths
+      # - name: Filter sensitive file
+      #   run: |
+      #     git filter-repo --path test_private.json --invert-paths
 
       - name: Force push to target repository
         env:
