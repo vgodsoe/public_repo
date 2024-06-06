@@ -36,7 +36,7 @@ jobs:
           # Create a new branch and commit changes
           git checkout -b my-changes
           # Add your changes
-          git add .
+          git remote add target https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/vgodsoe/public_repo.git
           git commit -m "My changes"
 
           # Push the branch to the remote repository
