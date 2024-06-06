@@ -1,0 +1,25 @@
+name: Push to another repository
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+
+      - name: Force push to target repository
+        env:
+          PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+        run: |
+          git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
+          git remote add origin https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/vgodsoe/public_repo.git
+          git branch -M main
+          git push -u origin main --force
