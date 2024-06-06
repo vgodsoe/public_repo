@@ -30,4 +30,4 @@ jobs:
           PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
           git remote add target https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/vgodsoe/public_repo.git
-          git push -u target main --force
+          git push -u origin main --force
