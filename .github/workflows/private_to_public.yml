@@ -14,18 +14,20 @@ jobs:
     steps:
       - name: Checkout source repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Install Git Filter-Repo
         run: |
           pip install git-filter-repo
 
-      # - name: Filter sensitive file
-      #   run: |
-      #     git filter-repo --path test_private.json --invert-paths
+      - name: Filter sensitive file
+        run: |
+          git filter-repo --path test_private.json --invert-paths
 
       - name: Force push to target repository
         env:
           PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
           git remote add target https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/vgodsoe/public_repo.git
-          git push -u origin main --force
+          git push -u target main --force
