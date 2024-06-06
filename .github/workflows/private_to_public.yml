@@ -15,9 +15,17 @@ jobs:
       - name: Checkout source repository
         uses: actions/checkout@v2
 
+      - name: Install Git Filter-Repo
+        run: |
+          pip install git-filter-repo
+
       - name: Force push to target repository
         env:
           PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
+          # Make the filter script executable
+          chmod +x filter_files.sh
+          # Run the filter script
+          ./filter_files.sh
           git remote add target https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/vgodsoe/public_repo.git
           git push -u origin main --force
