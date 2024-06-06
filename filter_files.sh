@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Filter sensitive files with --force option
-git filter-repo --path test_private.json --invert-paths
+git filter-repo --force --path test_private.json --invert-paths
