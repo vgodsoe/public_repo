@@ -19,6 +19,5 @@ jobs:
         env:
           PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
-          git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
           git remote add target https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/vgodsoe/public_repo.git
           git push -u origin main --force
