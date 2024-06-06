@@ -25,9 +25,31 @@ jobs:
       #   run: |
       #     git filter-repo --path test_private.json --invert-paths
 
-      - name: Force push to target repository
+      - name: Create Pull Request
         env:
           PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
-          git remote add target https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/vgodsoe/public_repo.git
-          git push -u target main --force
+          # Configure git
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          # Create a new branch and commit changes
+          git checkout -b my-changes
+          # Add your changes
+          git add .
+          git commit -m "My changes"
+
+          # Push the branch to the remote repository
+          git push -u target my-changes
+
+          # Create a pull request using the GitHub API
+          curl \
+            -X POST \
+            -H "Authorization: token $PUBLIC_REPO_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/vgodsoe/public_repo/pulls \
+            -d '{
+              "title": "My changes",
+              "head": "my-changes",
+              "base": "main"
+            }'
