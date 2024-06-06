@@ -15,6 +15,10 @@ jobs:
       - name: Checkout source repository
         uses: actions/checkout@v2
 
+      - name: Install Git Filter-Repo
+        run: |
+          pip install git-filter-repo
+
       - name: Force push to target repository
         env:
           PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
